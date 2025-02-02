@@ -106,6 +106,102 @@ Create an HTML file (for example, ```index.html```) and include the bundled file
 
 ```
 
+Constructor
+```js
+new Calendar(container, year, month, tasks, options);
+```
+Parameters
+- ```container``` (Element): The DOM element where the calendar will be inserted.
+- ```year``` (number): The year (e.g., 2025).
+- ```month``` (number): The month (1 to 12).
+- ```tasks``` (Array): JSON array containing task objects: ```{ year, month, day, task, description, color, attributes }```.
+- ```options``` (Object): Optional settings for the calendar.
+
+Options
+- ```taskCallback``` (function): A callback function that is called when a calendar cell is clicked. The function receives the year, month, day, and tasks for the clicked day as parameters.
+- ```dayNames``` (Array): An array of objects representing the names of the days of the week. Each object should have ```full``` and ```short``` properties.
+- ```monthNames``` (Array): An array of objects representing the names of the months. Each object should have ```full``` and ```short``` properties.
+- ```showButtons``` (boolean) show or hide navigation buttons of the calendar 
+Example Options
+```js
+{
+  taskCallback: function (year, month, day, tasks) {
+    console.log(`Tasks for ${year}-${month}-${day}:`);
+    console.table(tasks);
+  },
+  dayNames: [
+    { full: 'Hétfő', short: 'H' },
+    { full: 'Kedd', short: 'K' },
+    { full: 'Szerda', short: 'Sz' },
+    { full: 'Csütörtök', short: 'Cs' },
+    { full: 'Péntek', short: 'P' },
+    { full: 'Szombat', short: 'Sz' },
+    { full: 'Vasárnap', short: 'V' }
+  ],
+  monthNames: [
+    { full: 'Január', short: 'Jan' },
+    { full: 'Február', short: 'Feb' },
+    { full: 'Március', short: 'Már' },
+    { full: 'Április', short: 'Ápr' },
+    { full: 'Május', short: 'Máj' },
+    { full: 'Június', short: 'Jún' },
+    { full: 'Július', short: 'Júl' },
+    { full: 'Augusztus', short: 'Aug' },
+    { full: 'Szeptember', short: 'Sep' },
+    { full: 'Október', short: 'Oct' },
+    { full: 'November', short: 'Nov' },
+    { full: 'December', short: 'Dec' }
+  ]
+}
+```
+
+Methods
+
+```render()```
+
+Renders the calendar in the specified container.
+
+```changeMonth(offset)```
+
+Changes the displayed month by the specified offset (e.g., ```-1``` for the previous month, ```1``` for the next month).
+
+```setYear(year)```
+
+Sets the year and re-renders the calendar.
+
+```setMonth(month)```
+
+Sets the month and re-renders the calendar. Throws an error if the month is not between 1 and 12.
+
+Task Object
+
+Each task object in the tasks array should have the following properties:
+
+- ```year``` (number): The year of the task.
+- ```month``` (number): The month of the task (1 to 12).
+- ```day``` (number): The day of the task.
+- ```task``` (string): The name of the task.
+- ```description``` (string, optional): A description of the task.
+- ```color``` (string, optional): A color code for the task.
+- ```attributes``` (Array, optional): An array of objects representing additional attributes for the task element. Each object should have ```name``` and ```value``` properties.
+Example Task
+
+```json
+{
+  year: 2025,
+  month: 2,
+  day: 1,
+  task: "Team Mtg",
+  description: "Team Meeting: Weekly Sync and Project Updates",
+  color: "#0BC6F4",
+  attributes: [
+    { name: 'id', value: 'task-1' },
+    { name: 'data-uuid', value: '12345' }
+  ]
+}
+```
+
+
 ### Using the Component in a Modular Environment
 If you are working in an environment that supports ES6 modules (such as a React or Vue application), you can import the component as follows:
 ```js

@@ -74,10 +74,21 @@ class Calendar {
         const titleEl = document.createElement('div');
         titleEl.classList.add('calendar-title');
         titleEl.textContent = this.year + '. ' + monthNames[this.month - 1].full;
-
-        headerEl.appendChild(prevBtn);
+        let showButtons = true;
+        if (this.options.hasOwnProperty('showButtons')) {
+            showButtons = this.options.showButtons;
+        }
+        if (showButtons) {
+            headerEl.appendChild(prevBtn);
+        } else {
+            headerEl.appendChild(document.createElement('div'));
+        }
         headerEl.appendChild(titleEl);
-        headerEl.appendChild(nextBtn);
+        if (showButtons) {
+            headerEl.appendChild(nextBtn);
+        } else {
+            headerEl.appendChild(document.createElement('div'));
+        }
         calendarEl.appendChild(headerEl);
 
         // Days header: Monday to Sunday
@@ -85,7 +96,7 @@ class Calendar {
         daysEl.classList.add('calendar-days');
 
         let dayNames;
-        
+
         if (this.options.dayNames) {
             dayNames = this.options.dayNames;
         } else {
@@ -128,7 +139,7 @@ class Calendar {
         // Determine the first day of the month and the number of days
         const firstDay = new Date(this.year, this.month - 1, 1);
         const totalDays = new Date(this.year, this.month, 0).getDate();
-        
+
         // JavaScript getDay() returns 0 (Sunday) to 6 (Saturday).
         // Since our week starts on Monday, adjust accordingly.
         let startDay = firstDay.getDay();
@@ -170,59 +181,76 @@ class Calendar {
                 return task.year === this.year && task.month === this.month && task.day === day;
             });
 
-            dayTasks.forEach(task => {
-                const taskContainer = document.createElement('div');
-                taskContainer.classList.add('task');
-                taskContainer.classList.add('shadow');
-                if (task.color) {
-                    taskContainer.style.backgroundColor = task.color + '80';
-                    taskContainer.style.borderColor = task.color;
-                }
+            // Add tasks to the cell
+            if (dayTasks.length > 0) {
+                dayTasks.forEach(task => {
+                    const taskContainer = document.createElement('div');
+                    taskContainer.classList.add('task');
+                    taskContainer.classList.add('shadow');
+                    if (task.color) {
+                        taskContainer.style.backgroundColor = task.color + '80';
+                        taskContainer.style.borderColor = task.color;
+                    }
 
-                if (task.description) {
-                    // Full version: task code + description
-                    const fullTaskEl = document.createElement('span');
-                    fullTaskEl.classList.add('task-full');
-                    fullTaskEl.textContent = `${task.task} - ${task.description}`;
+                    if (task.description) {
+                        // Full version: task code + description
+                        const fullTaskEl = document.createElement('span');
+                        fullTaskEl.classList.add('task-full');
+                        fullTaskEl.textContent = `${task.task} - ${task.description}`;
 
-                    // Short version: only task code
-                    const shortTaskEl = document.createElement('span');
-                    shortTaskEl.classList.add('task-short');
-                    shortTaskEl.textContent = task.task;
+                        // Short version: only task code
+                        const shortTaskEl = document.createElement('span');
+                        shortTaskEl.classList.add('task-short');
+                        shortTaskEl.textContent = task.task;
 
-                    taskContainer.appendChild(fullTaskEl);
-                    taskContainer.appendChild(shortTaskEl);
-                } else {
-                    // If no description, display only task code
-                    taskContainer.textContent = task.task;
-                }
-                tasksEl.appendChild(taskContainer);
-            });
+                        taskContainer.appendChild(fullTaskEl);
+                        taskContainer.appendChild(shortTaskEl);
+                    } else {
+                        // If no description, display only task code
+                        taskContainer.textContent = task.task;
+                    }
+
+                    // Add additional attributes to the task item
+                    if (task.attributes) {
+                        task.attributes.forEach(attr => {
+                            taskContainer.setAttribute(attr.name, attr.value);
+                        });
+                    }
+
+                    tasksEl.appendChild(taskContainer);
+                });
+            }
 
             if (dayTasks.length > 0) {
                 cell.appendChild(tasksEl);
                 // Show task modal on click
                 cell.style.cursor = 'pointer';
-                cell.addEventListener('click', function() {
-                    const modalBody = document.getElementById('taskModalBody');
-                    modalBody.innerHTML = '';
-
-                    dayTasks.forEach(task => {
-                        const taskItem = document.createElement('div');
-                        taskItem.classList.add('modal-task-item');
-                        taskItem.textContent = task.description 
-                            ? `${task.task} - ${task.description}` 
-                            : task.task;
-                        modalBody.appendChild(taskItem);
+                if (this.options.taskCallback) {
+                    cell.addEventListener('click', function () {
+                        self.options.taskCallback(self.year, self.month, day, dayTasks);
                     });
+                } else {
+                    cell.addEventListener('click', function () {
+                        const modalBody = document.getElementById('taskModalBody');
+                        modalBody.innerHTML = '';
 
-                    const modalLabel = document.getElementById('taskModalLabel');
-                    modalLabel.textContent = `Tasks: ${self.year}. ${monthNames[self.month - 1].full} ${day}.`;
+                        dayTasks.forEach(task => {
+                            const taskItem = document.createElement('div');
+                            taskItem.classList.add('modal-task-item');
+                            taskItem.textContent = task.description
+                                ? `${task.task} - ${task.description}`
+                                : task.task;
+                            modalBody.appendChild(taskItem);
+                        });
 
-                    const modalElement = document.getElementById('taskModal');
-                    const modalInstance = new bootstrap.Modal(modalElement);
-                    modalInstance.show();
-                });
+                        const modalLabel = document.getElementById('taskModalLabel');
+                        modalLabel.textContent = `Tasks: ${self.year}. ${monthNames[self.month - 1].full} ${day}.`;
+
+                        const modalElement = document.getElementById('taskModal');
+                        const modalInstance = new bootstrap.Modal(modalElement);
+                        modalInstance.show();
+                    });
+                }
             }
 
             gridEl.appendChild(cell);
@@ -231,6 +259,22 @@ class Calendar {
         calendarEl.appendChild(gridEl);
         this.container.appendChild(calendarEl);
     }
+
+    // Set the year and re-render the calendar
+    setYear(year) {
+        this.year = year;
+        this.render();
+    }
+
+    // Set the month and re-render the calendar
+    setMonth(month) {
+        if (month < 1 || month > 12) {
+            throw new Error('Month must be between 1 and 12');
+        }
+        this.month = month;
+        this.render();
+    }
+
 
     // Change month (navigate)
     changeMonth(offset) {

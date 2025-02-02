@@ -52,7 +52,10 @@
 
     // Initialize the calendar: container, year, month and tasks
     const calendarContainer = document.getElementById('calendar-container');
-    new Calendar(calendarContainer, 2025, 2, tasks);
+    new Calendar(calendarContainer, 2025, 2, tasks, function(year, month, day, tasks) {
+      console.log(`Tasks for ${year}-${month}-${day}:`);
+      console.table(tasks);
+    });
 
   </script>
 </body>
