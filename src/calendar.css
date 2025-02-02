@@ -1,0 +1,148 @@
+/* Base styles */
+.calendar {
+    max-width: 100%;
+    margin: 0 auto;
+    border: 1px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+}
+
+/* Header: year–month and navigation */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: var(--bs-secondary-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.calendar-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.calendar-cell.today {
+    border: 2px solid rgba(var(--bs-primary-rgb), 1);           /* Thicker yellow border */
+    background-color: rgba(var(--bs-primary-rgb), 0.4);        /* Highlight background color (gold) */
+}
+
+
+/* Days header – Grid layout with 7 equal columns */
+.calendar-days {
+    background: var(--bs-secondary-bg);
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: 40px;
+    gap: 0;
+}
+
+/* Header cells (day labels) – no fixed height, only aspect-ratio */
+.calendar-days .day-label {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid var(--bs-border-color);
+    font-size: 1em;
+    text-overflow: "";
+    font-size: clamp(8px, 12px, 20px); /* Min. 12px, ideális 2vw, max. 20px */
+    /* The aspect-ratio ensures that the cell height is proportional to its width
+    aspect-ratio: 1;
+*/
+}
+
+.day-label .short-name {
+    display: none;
+}
+
+/* Calendar grid – also grid, 7 columns */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+}
+
+/* Calendar cells */
+.calendar-cell {
+    border: 1px solid var(--bs-border-color);
+    padding: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+    /* The aspect-ratio ensures that the cell is square */
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Empty cells */
+.calendar-cell.empty {
+    background: var(--bs-tertiary-bg);
+}
+
+.date-number {
+    font-weight: bold;
+    margin-top: 4px;
+    margin-left: 4px;
+}
+
+.task {
+    background-color: rgba(var(--bs-success-rgb), 0.5);
+    border: 1px solid rgba(var(--bs-success-rgb), 0.8);
+    border-radius: 4px;
+    padding: 2px;
+    margin-bottom: 2px;
+}
+
+/* Display tasks */
+.task-full {
+    display: inline;
+    /* or block, depending on how you want to arrange them */
+}
+
+.task-short {
+    display: none;
+}
+
+.tasks {
+    flex: 1;
+    font-size: 0.8em;
+    overflow-y: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Responsive modifications for mobile view (max-width: 728px) */
+@media (max-width: 728px) {
+
+    /* On mobile, replace the day header cell content with the shortened version */
+    .day-label .full-name {
+        display: none;
+    }
+
+    .day-label .short-name {
+        display: block;
+    }
+
+    .task-full {
+        display: none;
+    }
+
+    .task-short {
+        display: inline;
+    }
+
+    /* If necessary, reduce padding and font size in calendar cells */
+    .calendar-cell {
+        padding: 2px;
+    }
+
+    .date-number {
+        font-size: 0.9em;
+    }
+
+    .tasks,
+    .task {
+        font-size: 0.7em;
+    }
+}
