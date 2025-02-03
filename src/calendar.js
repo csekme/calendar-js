@@ -19,6 +19,12 @@ class Calendar {
         this.render();
     }
 
+    // Load tasks into the calendar
+    loadTasks(tasks) {
+        this.tasks = tasks;
+        this.render();
+    }
+
     render() {
         // Clear previous content
         this.container.innerHTML = '';

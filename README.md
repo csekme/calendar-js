@@ -173,6 +173,10 @@ Sets the year and re-renders the calendar.
 
 Sets the month and re-renders the calendar. Throws an error if the month is not between 1 and 12.
 
+```loadTasks(task)```
+
+Load tasks to the calendar. It will implicit call ```render()``` method.
+
 Task Object
 
 Each task object in the tasks array should have the following properties:
